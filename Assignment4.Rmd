@@ -1,0 +1,50 @@
+---
+title: "Assignment4"
+author: "Cecilie Stilling Pedersen"
+date: "23 sep 2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#####ASSIGNMENT 4#####
+
+1) Use R to figure out how many elements in the vector below are greater than 2.
+```{r}
+rooms <- c(1, 2, 1, 3, 1, NA, 3, 1, 3, 2, 1, NA, 1, 8, 3, 1, 4, NA, 1, 3, 1, 2, 1, 7, 1, NA)
+
+sum(rooms > 2, na.rm = T) #using na.rm = true to remove NAs
+#there are 8 elements in the vector that are greater than 2
+
+```
+
+2) What type of data is in the 'rooms' vector?
+
+```{r}
+class(rooms)
+#the data is numeric
+```
+
+3) What is the result of running the median() function on the above 'rooms' vector?
+
+```{r}
+median(rooms, na.rm = T) #using na.rm = true to remove NAs
+#the median() function computes the sample median which in this case is 1.5
+
+```
+4. Importing SAFI_clean csv
+
+```{r}
+install.packages("tidyverse")
+library("tidyverse")
+
+download.file("https://ndownloader.figshare.com/files/11492171", "C:/Users/cecil/OneDrive/AU/Cultural Data Science/W4/Assignment 4/au580204_stilling_cecilie/SAFI_clean.csv")
+
+interviews <- read_csv("SAFI_clean.csv")
+```
+
+
+
+

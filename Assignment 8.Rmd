@@ -1,0 +1,375 @@
+---
+title: "Assignment 8 - Webscraping"
+author: "Cecilie Stilling Pedersen"
+date: "29 okt 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Assignment 8 - option 3
+
+```{r libraries, warning=FALSE, message=FALSE}
+library(rvest)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(janitor)
+```
+
+##Scraping the website
+
+```{r}
+url <- "http://web.archive.org/web/20200502072010/https://killedbypolice.net/kbp2020"
+# scrape the website
+url_html <- read_html(url)
+```
+
+
+```{r scrape-table}
+whole_table <- url_html %>% 
+ html_nodes("table") %>%
+ html_table()  #str(whole_table) turns out to be a list
+#head(whole_table)
+```
+
+```{r html-to-df}
+new_table <- do.call(cbind,unlist(whole_table, recursive = FALSE)) 
+head(new_table)
+```
+
+## Automate the scraping
+
+```{r scrape-function}
+scrape_police_kill <- function(website){
+	url <- read_html(website)
+	annual_table <- url %>% 
+ 			html_nodes("table") %>%
+ 			html_table()  # result is a list
+  annual_table <- do.call(cbind,unlist(annual_table, recursive = FALSE))
+ }
+
+# Test that the function works on year 2018
+
+table2018 <- scrape_police_kill("https://killedbypolice.net/kbp2018")
+table2018 %>% 
+	head()
+```
+
+```{r loop}
+mastertable=NULL  # we need to create an empty container for results
+
+for (year in 2013:2020){  # here we create a loop to iterate over the years
+	print(year)
+	url <- "http://web.archive.org/web/20200502072010/https://killedbypolice.net/kbp"   # the annual URLs end with "kbp2017" ,etc., so make sure to strip the year so it can be replaced
+	website <- paste0(url,year)  # here we bind the year to the website to form the URL
+	annual_table <- scrape_police_kill(website) # here we apply the function
+	mastertable <- rbind(mastertable, annual_table) # we add the scraped results from the given year to our master dataset
+	}
+head(mastertable,2)
+tail(mastertable)
+
+```
+
+## Cleaning the data
+
+```{r clean-data}
+mastertable <- as_tibble(mastertable)
+str(mastertable)
+```
+
+### Make Age column numeric and relabel the '*' column to Method
+
+Most of the columns are fine containing characters, but Age should be a number and `*` needs renaming.
+
+```{r wrangle-columns, message = FALSE, warning=FALSE}
+library(tidyverse)
+data <- mastertable %>% 
+	mutate(Age = as.numeric(Age))  %>% 
+	rename(Method = "*") 
+```
+
+
+### Cleanup the dates with `lubridate` package and `grepl()`
+
+Date column datatype is character and needs to be a date. But first, lets look how consistent the Date column values really are.
+
+```{r check-dates}
+mastertable$Date[c(30:40, 70:80)]
+tail(unique(mastertable$Date))
+```
+
+In 2020, the format is MM/DD/YYYY in 2013-2014, during the early years of recording , switching to ISO-compliant format YYYY-MM-DD from 2015 on.  These two types of formatting are internally consistent and need to be ironed out if they persist. `Lubridate` library and `grepl()` can help with the cleaning here.
+
+```{r clean-dates, warning = FALSE}
+library(lubridate)
+
+# Adapt this pipeline to any other inconsistent dates you discover
+data <- data %>%
+	mutate(Date =
+			case_when(
+				grepl("201[34]", Date) ~ mdy(Date),
+				# convert dates that contain 2013 or 2014 into mdy format
+				!grepl("201[34]",Date) ~ ymd(Date)),
+					Year = year(Date))
+				# convert all other dates ymd format
+
+# Create a new column called "Year" from the Date for plotting
+# data <- data %>% 
+# 	mutate(Year = year(Date))  
+
+tail(data$Year)
+class(data$Date)
+class(data$Year)
+length(which(is.na(data$Date)))
+length(which(is.na(data$Year)))
+
+```
+### Write result to file
+
+Now that the data looks half decent, we can export it to a file. 
+```{r write-to-csv}
+write_csv(data,"data/policekillings202110.csv")
+```
+
+## Analyze Age
+
+```{r plot-age}
+library(ggplot2)
+library(ggridges)
+
+data <- read_csv("data/policekillings202110.csv")
+data %>% 
+  filter(Gender %in% c("F", "M", "T")) %>% 
+  filter(!is.na(Year)) %>% 
+  ggplot(aes(x = Age,
+             y = factor(Year),
+             fill = Gender)) +
+  geom_density_ridges(alpha = 0.5, 
+                      scale = 0.9)  +
+  theme_ridges(font_size = 10) +
+  scale_x_continuous(breaks = seq(0, 100, 10),
+                     labels = seq(0, 100, 10)) +
+  xlab("Age at death (years)") +
+  ylab("Year") +
+  theme(axis.title = element_text(size = 14))
+```
+
+### Race
+Of the three ethnic groups that make up most of the deaths, Black and Latino people tend to be younger than White people when they are killed by police. 
+
+```{r plot-race}
+library(tidyverse)
+
+data %>% 
+  filter(Race %in% c("B", "W", "L")) %>% 
+  filter(!is.na(Year)) %>% 
+  ggplot(aes(x = Age,
+             y = factor(Year),
+             fill = Race)) +
+  geom_density_ridges(alpha = 0.6, 
+                      scale = 0.9)  +
+  theme_ridges(font_size = 10) +
+  scale_x_continuous(breaks = seq(0, 100, 10),
+                     labels = seq(0, 100, 10)) +
+  xlab("Age at death (years)") +
+  ylab("Year") +
+  theme(axis.title = element_text(size = 14))
+```
+
+### Method 
+By far the most common way that people are killed by police is with a gun. Deaths by vehicle involve women more often than men. Other methods are less common, and frankly, I do not know what the acronyms stand for (R, T, U..) 
+```{r plot-method}
+data %>% 
+  filter(!is.na(Year)) %>% 
+  filter(Method != "NA") %>% 
+  filter(Gender %in% c("M", "F", NA)) %>% 
+  group_by(Year, 
+           Gender,
+           Method) %>% 
+  tally() %>% 
+  mutate(perc = n / sum(n) * 100)  %>% 
+  ggplot(aes(Method,
+             perc,
+             fill = Gender)) +
+  geom_col() +
+  facet_grid(Gender~Year) +
+  theme_minimal(base_size = 10) +
+  xlab("Method of killing") +
+  ylab("Percentage of all\npeople killed by police\nby gender") 
+```
+
+
+## Map casualties by state
+
+In 2016, the state with the largest number of people killed by police was California.
+
+
+```{r map 2016}
+#install.packages(c("statebins", "viridis"))
+library(statebins) # using GitHub version
+library(viridis)
+
+# we need to convert state abbreviations to state names for the statebins function
+state_abb <- data_frame(state_name = state.name,
+                        state_abb = state.abb)
+
+# we need to add the state popluations so we can get a proportion of people in each state
+# we got this from https://www2.census.gov/programs-surveys/popest/tables/2010-2016/state/totals/nst-est2016-01.xlsx
+state_populations <- readr::read_csv("data-raw/nst-est2016-01.csv")
+
+# clean it a little
+state_populations <-  
+  state_populations %>% 
+  mutate(state_name = gsub("\\.", "", X__1)) %>%
+  left_join(state_abb)
+
+# compute deaths by state and as deaths per 1000 people in each state
+by_state16 <- data %>% 
+  filter(Year == 2016) %>% 
+  group_by(State) %>% 
+  tally() %>% 
+  left_join(state_abb, by = c('State' = 'state_abb')) %>% 
+  filter(!is.na(state_name)) %>% 
+  left_join(state_populations) %>% 
+  mutate(per_n_people = (n / `2016`) * 1000000)
+
+# plot 'statebin' style map
+ggplot(by_state16, 
+       aes(state = state_name, 
+           fill = n)) +
+  geom_statebins() +
+  coord_equal() +
+  scale_fill_viridis() +
+  theme_statebins() +
+  labs(title = "Total number of people killed by police \nin each state in 2016") +
+  theme(legend.title=element_blank()) 
+```
+
+
+The difference between 2016 and 2019 is hardly visible, with the exception of Texas. I downloaded this census on 20 July from https://www2.census.gov/programs-surveys/popest/tables/2010-2019/state/asrh/
+
+```{r map 2019}
+state_population19 <- readr::read_csv("data-raw/sc-est2019-alldata5.csv")
+
+# clean it a little
+state_pop17_19 <- state_population19 %>% 
+	group_by(NAME) %>% 
+	summarize(pop2017= sum(POPESTIMATE2017), pop2018 = sum(POPESTIMATE2018), pop2019=sum(POPESTIMATE2019)) %>% 
+	rename(state_name = NAME)
+
+state_pop17_19 %>% 
+	select(state_name, pop2017) %>% 
+	glimpse()
+
+# compute deaths by state and as deaths per 1000 people in each state
+by_state19 <- data %>% 
+  filter(Year == 2019) %>% 
+  group_by(State) %>% 
+  tally() %>% 
+  left_join(state_abb, by = c('State' = 'state_abb')) %>% 
+  filter(!is.na(state_name)) %>% 
+  left_join(state_pop17_19) %>% 
+  mutate(per_n_people = (n / `pop2019`) * 1000000)
+
+# plot 'statebin' style map
+ggplot(by_state19, 
+       aes(state = state_name, 
+           fill = n)) +
+  geom_statebins() +
+  coord_equal() +
+  scale_fill_viridis() +
+  theme_statebins() +
+  labs(title = "Total number of people killed by police \nin each state in 2019") +
+  theme(legend.title=element_blank()) 
+```
+
+
+Let's now divide the totals by the number of people in each state: in 2016, New Mexico and Alaska have the highest proportions of people killed by police.  
+
+```{r ratios by state2016}
+ggplot(by_state16, 
+       aes(state = state_name, 
+           fill = per_n_people)) +
+  geom_statebins() +
+  coord_equal() +
+  scale_fill_viridis() +
+  theme_statebins() +
+  labs(title = "Number of people killed by police in each state in 2016,\nper 1,000,000 people")  +
+  theme(legend.title=element_blank()) 
+```
+
+In 2019 the primacy still goes to least populous state of Alaska, but New Mexico, Oklahoma and West Virginia follow in tight succession (while Texas stands at 1 per 100,000)
+
+```{r ratios by state2019}
+ggplot(by_state19, 
+       aes(state = state_name, 
+           fill = per_n_people)) +
+  geom_statebins() +
+  coord_equal() +
+  scale_fill_viridis() +
+  theme_statebins() +
+  labs(title = "Number of people killed by police in each state in 2019,\nper 1,000,000 people")  +
+  theme(legend.title=element_blank()) 
+```
+
+
+# Option 3 
+Produce data visualisations that shed light on another interesting aspect of the police killing data
+
+## Looking at the number of black people killed by police compared to white people in 2016 and 2019
+
+
+```{r race and gender}
+data %>% 
+  filter(!is.na(Year)) %>% 
+  filter(Race %in% c("B", "W")) %>% 
+  filter(Gender %in% c("F", "M")) %>% 
+  group_by(Year, 
+           Gender,
+           Race) %>% 
+  tally() %>% 
+  mutate(perc = n / sum(n) * 100)  %>% 
+  ggplot(aes(Race,
+             perc,
+             fill = Gender)) +
+  geom_col() +
+  facet_grid(Gender~Year) +
+  theme_minimal(base_size = 10) +
+  xlab("Race") +
+  ylab("Percentage of people killed by police\nby gender") 
+
+```
+## It would be nice to see how many of the women killed by police are black. 
+
+```{r black women}
+data %>% 
+  filter(!is.na(Year)) %>% 
+  filter(Race %in% c("B", "W")) %>% 
+  filter(Gender %in% c("F")) %>% 
+  group_by(Year, 
+           Gender,
+           Race) %>% 
+  tally() %>% 
+  mutate(perc = n / sum(n) * 100)  %>% 
+  ggplot(aes(Race,
+             perc)) +
+  geom_col() +
+  facet_grid(Gender~Year) +
+  theme_minimal(base_size = 10) +
+  xlab("Race") +
+  ylab("Percentage of women killed by police\nby race") 
+
+```
+## I want to look at the killings of the different races over the years. 
+
+```{r black women}
+data %>%
+  ggplot(data, mapping = aes(x = Year, fill = Race)) + 
+  geom_bar()+
+  geom_bar(data, mapping = aes(x = Year, fill = Race))
+
+
+```

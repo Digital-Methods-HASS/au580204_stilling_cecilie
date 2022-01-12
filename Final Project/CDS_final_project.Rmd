@@ -1,0 +1,465 @@
+---
+title: "CDS - The Moods of Migraine"
+author: "Cecilie Stilling Pedersen"
+date: "1 nov 2021"
+output: html_document
+---
+
+# Intro: 
+What do I want to do?
+
+
+## Data prep
+
+```{r Packages and WD}
+# Load packages
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(rvest)
+library(tidyr)
+library(stringr)
+library(janitor)
+library(httr)
+library(jsonlite)
+library(lubridate)
+
+# citation()
+# citation("dplyr")
+# citation("tidyverse")
+# citation("ggplot2")
+# Set working directory
+setwd("C:/Users/cecil/OneDrive/AU/Cultural Data Science/Exam project")
+
+```
+
+```{r Load data}
+# Loading data
+mood_data <- read.csv("daylio-export-2021-11-01.csv", header = TRUE, sep = ",")
+
+migraine_data <- read.csv("migraine_data_updated.csv", header = TRUE, sep = ";")
+
+```
+
+### Mood data
+We're only interested in the mood data that line up with the migraine data, and we want to convert the registered moods to numbers on a three point scale.
+```{r Clean mood_data}
+# Check class for full_date
+class(mood_data$full_date) # Character
+
+# Change class to date for full_date
+mood_data$full_date <- as.Date(mood_data$full_date)
+
+# Check class again to see if it worked
+class(mood_data$full_date) # Date
+
+# Remove rows we don't need (we only need the data between 2021-08-20 and 2021-10-31)
+mood_data_subset <- mood_data[1:73,]
+
+# Write the weekdays in English
+mood_data_clean <- mood_data_subset %>%
+  mutate(weekday = if_else(weekday %in% "søndag","sunday",
+                   if_else(weekday %in% "lørdag","saturday",
+                   if_else(weekday %in% "fredag", "friday",
+                   if_else(weekday %in% "torsdag", "thursday",
+                   if_else(weekday %in% "onsdag", "wednesday",
+                   if_else(weekday %in% "tirsdag", "tuesday",
+                   if_else(weekday %in% "mandag", "monday", "other"))))))))
+
+# Get the diffeerent moods in English 
+mood_data_clean <- mood_data_clean %>% 
+  mutate(mood = if_else(mood %in% "depressed", "depressed",
+                if_else(mood %in% "fint", "good",
+                if_else(mood %in% "middel", "neutral", 
+                if_else(mood %in% "swings", "neutral", "depressed")))))
+
+
+# Remove the "note" cloumns
+mood_data_clean <- mood_data_clean[-c(7,8)]
+
+# Make new column where the different moods are rated on a 1-3 point scale 
+mood_data_clean$mood_rating <- mood_data_clean$mood
+mood_data_clean <- mood_data_clean %>% 
+  mutate(mood_rating = if_else(mood %in% "depressed", "1",
+                if_else(mood %in% "good", "3",
+                if_else(mood %in% "neutral", "2", 
+                if_else(mood %in% "swings", "2", "3")))))
+
+
+# Check class for mood_rating
+class(mood_data_clean$mood_rating) # Character
+
+# Change class to date for full_date
+mood_data_clean$mood_rating <- as.numeric(mood_data_clean$mood_rating)
+
+# Check class again to see if it worked
+class(mood_data_clean$mood_rating) # numeric
+
+
+```
+
+### Migraine data
+
+```{r Clean migraine_data}
+
+migraine_data$date <- format(as.Date(migraine_data$date, format = "%d-%m-%Y"), "%Y-%m-%d")
+
+# Check class for date
+class(migraine_data$date) # Character
+
+# Change class to date for date
+migraine_data$date <- as.Date(migraine_data$date)
+
+# Check class again to see if it worked
+class(migraine_data$date) # Date
+
+names(migraine_data)[names(migraine_data) == "date"] <- "full_date"
+```
+
+### Merging mood and migraine data
+We want to merge the two data sets
+
+```{r Merging mood and migraine data}
+# Merging mood_data_clean with migraine_data
+data_both <- merge(mood_data_clean, migraine_data)
+
+# create column with migraine, headache and nothing
+data_both$pain_type = "nothing"
+#data_all$pain_type_value = 0
+# 0 = nothing , 1 = headache , 2 = migraine
+
+data_both$pain_type[data_both$migraine > 0] = "migraine"
+data_both$pain_type[data_both$headache > 0] = "headache"
+# data_all$pain_type_value[data_all$migraine > 0] = 2
+# data_all$pain_type_value[data_all$headache > 0] = 1
+
+
+```
+
+### Weather data
+We want to accent weather data for the mood and migraine registering period to see if there is any correlation.
+
+```{r Weather data access}
+## IMPORTANT: my weather data license might be outdated, so I have saved the accessed and cleaned data while I had the API key, so it can be loaded anyways - If this is the case, then skip the next two chunks and go directly to the "Merging mood/migraine data and weather data" chunk
+
+
+# I can only access 35 dates at a time form the worldweatheronline website, so I split it in 3 steps
+# 1
+weather = GET("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=684c5c95ad3844339bf120034211111&q=Aarhus&format=json&date=2021-08-20&enddate=2021-11-15")
+
+weather_text <- content(weather, "text")
+weather_text
+
+weather_json <- fromJSON(weather_text, flatten = TRUE)
+
+weather_df <- as.data.frame(weather_json)
+
+
+# 2
+weather2 = GET("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=684c5c95ad3844339bf120034211111&q=Aarhus&format=json&date=2021-09-24&enddate=2021-11-15")
+
+
+weather2_text <- content(weather2, "text")
+weather2_text
+
+weather2_json <- fromJSON(weather2_text, flatten = TRUE)
+
+weather2_df <- as.data.frame(weather2_json)
+
+
+# 3
+weather3 = GET("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=684c5c95ad3844339bf120034211111&q=Aarhus&format=json&date=2021-10-29&enddate=2021-11-15")
+
+weather3_text <- content(weather3, "text")
+weather3_text
+
+weather3_json <- fromJSON(weather3_text, flatten = TRUE)
+
+weather3_df <- as.data.frame(weather3_json)
+
+# Combine the 3 weatherd dataframes using rbind
+weather_data <- rbind(weather_df, weather2_df, weather3_df)
+
+# Delete the rows not corresponding to the migraine and mood data
+weather_data <- weather_data[-c(74:88), ]
+
+```
+
+```{r Clean weather_data}
+# Separeate the lists in the dataframe
+weather_data_unlist <- cbind(weather_data[!sapply(weather_data, is.list)], 
+                             (t(apply(weather_data[sapply(weather_data, is.list)], 1, unlist))))
+
+
+### Humidity ###
+
+# Check class
+class(weather_data_unlist$data.weather.hourly.humidity1) # character
+
+# Make numeric
+weather_data_unlist$data.weather.hourly.humidity1 <- as.numeric(weather_data_unlist$data.weather.hourly.humidity1)
+
+weather_data_unlist$data.weather.hourly.humidity2 <- as.numeric(weather_data_unlist$data.weather.hourly.humidity2)
+
+weather_data_unlist$data.weather.hourly.humidity3 <- as.numeric(weather_data_unlist$data.weather.hourly.humidity3)
+
+weather_data_unlist$data.weather.hourly.humidity4 <- as.numeric(weather_data_unlist$data.weather.hourly.humidity4)
+
+weather_data_unlist$data.weather.hourly.humidity5 <- as.numeric(weather_data_unlist$data.weather.hourly.humidity5)
+
+weather_data_unlist$data.weather.hourly.humidity6 <- as.numeric(weather_data_unlist$data.weather.hourly.humidity6)
+
+weather_data_unlist$data.weather.hourly.humidity7 <- as.numeric(weather_data_unlist$data.weather.hourly.humidity7)
+
+weather_data_unlist$data.weather.hourly.humidity8 <- as.numeric(weather_data_unlist$data.weather.hourly.humidity8)
+
+# Check class again
+class(weather_data_unlist$data.weather.hourly.humidity8) # numeric
+
+# Take mean of the hourly humidity rows and put into new column
+weather_data_unlist$mean_humidity <- rowMeans(weather_data_unlist[ , 115:122])
+
+
+### PRESSURE ### 
+
+# Check class
+class(weather_data_unlist$data.weather.hourly.pressure1) # character
+
+# Make numeric
+weather_data_unlist$data.weather.hourly.pressure1 <- as.numeric(weather_data_unlist$data.weather.hourly.pressure1)
+
+weather_data_unlist$data.weather.hourly.pressure2 <- as.numeric(weather_data_unlist$data.weather.hourly.pressure2)
+
+weather_data_unlist$data.weather.hourly.pressure3 <- as.numeric(weather_data_unlist$data.weather.hourly.pressure3)
+
+weather_data_unlist$data.weather.hourly.pressure4 <- as.numeric(weather_data_unlist$data.weather.hourly.pressure4)
+
+weather_data_unlist$data.weather.hourly.pressure5 <- as.numeric(weather_data_unlist$data.weather.hourly.pressure5)
+
+weather_data_unlist$data.weather.hourly.pressure6 <- as.numeric(weather_data_unlist$data.weather.hourly.pressure6)
+
+weather_data_unlist$data.weather.hourly.pressure7 <- as.numeric(weather_data_unlist$data.weather.hourly.pressure7)
+
+weather_data_unlist$data.weather.hourly.pressure8 <- as.numeric(weather_data_unlist$data.weather.hourly.pressure8)
+
+# Check class again
+class(weather_data_unlist$data.weather.hourly.pressure8) # numeric
+
+# Take mean of the hourly humidity rows and put into new column
+weather_data_unlist$mean_pressure <- rowMeans(weather_data_unlist[ , 139:146])
+
+
+### WindGustKmph ###
+
+# Check class
+class(weather_data_unlist$data.weather.hourly.WindGustKmph1) # character
+
+# Make numeric
+weather_data_unlist$data.weather.hourly.WindGustKmph1 <- as.numeric(weather_data_unlist$data.weather.hourly.WindGustKmph1)
+
+weather_data_unlist$data.weather.hourly.WindGustKmph2 <- as.numeric(weather_data_unlist$data.weather.hourly.WindGustKmph2)
+
+weather_data_unlist$data.weather.hourly.WindGustKmph3 <- as.numeric(weather_data_unlist$data.weather.hourly.WindGustKmph3)
+
+weather_data_unlist$data.weather.hourly.WindGustKmph4 <- as.numeric(weather_data_unlist$data.weather.hourly.WindGustKmph4)
+
+weather_data_unlist$data.weather.hourly.WindGustKmph5 <- as.numeric(weather_data_unlist$data.weather.hourly.WindGustKmph5)
+
+weather_data_unlist$data.weather.hourly.WindGustKmph6 <- as.numeric(weather_data_unlist$data.weather.hourly.WindGustKmph6)
+
+weather_data_unlist$data.weather.hourly.WindGustKmph7 <- as.numeric(weather_data_unlist$data.weather.hourly.WindGustKmph7)
+
+weather_data_unlist$data.weather.hourly.WindGustKmph8 <- as.numeric(weather_data_unlist$data.weather.hourly.WindGustKmph8)
+
+# Check class again
+class(weather_data_unlist$data.weather.hourly.WindGustKmph8) # numeric
+
+# Take mean of the hourly humidity rows and put into new column
+weather_data_unlist$mean_WindGustKmph <- rowMeans(weather_data_unlist[ , 219:226])
+
+
+### PRECIPITATION MM ###
+
+# Check class
+class(weather_data_unlist$data.weather.hourly.precipMM1) # character
+
+# Make numeric
+weather_data_unlist$data.weather.hourly.precipMM1<- as.numeric(weather_data_unlist$data.weather.hourly.precipMM1)
+
+weather_data_unlist$data.weather.hourly.precipMM2 <- as.numeric(weather_data_unlist$data.weather.hourly.precipMM2)
+
+weather_data_unlist$data.weather.hourly.precipMM3 <- as.numeric(weather_data_unlist$data.weather.hourly.precipMM3)
+
+weather_data_unlist$data.weather.hourly.precipMM4 <- as.numeric(weather_data_unlist$data.weather.hourly.precipMM4)
+
+weather_data_unlist$data.weather.hourly.precipMM5 <- as.numeric(weather_data_unlist$data.weather.hourly.precipMM5)
+
+weather_data_unlist$data.weather.hourly.precipMM6 <- as.numeric(weather_data_unlist$data.weather.hourly.precipMM6)
+
+weather_data_unlist$data.weather.hourly.precipMM7 <- as.numeric(weather_data_unlist$data.weather.hourly.precipMM7)
+
+weather_data_unlist$data.weather.hourly.precipMM8 <- as.numeric(weather_data_unlist$data.weather.hourly.precipMM8)
+
+# Check class again
+class(weather_data_unlist$data.weather.hourly.precipMM8) # numeric
+
+# Take mean of the hourly humidity rows and put into new column
+weather_data_unlist$mean_precipMM <- rowMeans(weather_data_unlist[ , 99:106])
+
+
+# Save the weather data so we have access to it even after the license is outdated
+write.csv(weather_data_unlist,"weather_data_unlist.csv", row.names = FALSE)
+
+
+
+# Create dataframe with the columns I want to use
+
+weather_data_select <- weather_data_unlist %>% 
+  select("data.weather.date", "data.weather.maxtempC", "data.weather.mintempC", "data.weather.avgtempC", "data.weather.sunHour", "mean_humidity", "mean_pressure", "mean_WindGustKmph", "mean_precipMM")
+
+weather_data_select <- weather_data_select %>% 
+  rename(full_date = data.weather.date)
+
+
+# Save the weather data so we have access to it even after the license is outdated
+# write.csv(weather_data_select,"weather_data_select.csv", row.names = FALSE)
+
+```
+
+
+### Merging the data
+We want to merge the weather data with the mood/migriane data
+
+```{r Merging mood/migraine data and weather data}
+# In case the API keys has been diabled, load the weater data 
+weather_data_select <- read.csv("weather_data_select.csv", header = TRUE, sep = ",")
+
+# Merging mood_data_clean with migraine_data
+data_all <- merge(data_both, weather_data_select, by = "full_date")
+
+# Merging does not work - it returns the columns but 0 rows, so we inspect the column to be joined by
+"full_date" %in% names(data_both) #TRUE
+"full_date" %in% names(weather_data_select) #TRUE
+
+# Check class for full_date in weather data
+class(weather_data_select$full_date) #character
+
+# The issue is that ful_date in the weather data is not dates but character
+# Change class to date for full_date
+weather_data_select$full_date <- as.Date(weather_data_select$full_date)
+
+# Check class again to see if it worked
+class(weather_data_select$full_date) # Date
+
+# Merging mood_data_clean with migraine_data
+data_all <- merge(data_both, weather_data_select, by = "full_date")
+
+
+# Save the final data set
+# write.csv(data_all,"data_all.csv", row.names = FALSE)
+
+```
+
+
+
+## Data visualization
+
+```{r Distribution overview}
+
+# Bar plot to give an overview of the general mood of Patient X
+ggplot(data_all, aes(x = mood, fill = mood))+
+  geom_bar() 
+
+
+
+
+# Bar plot to give an overview of the  migraine and headaches
+ggplot(data_all, aes(x=pain_type, fill=pain_type)) +
+  geom_bar()
+
+
+```
+
+```{r Visualizations}
+
+# Plot to see the ratings of mood and migraine throughout the registered period
+ggplot(data_all, aes(full_date)) + 
+  geom_line(aes(y = migraine, colour = "migraine")) + 
+  geom_line(aes(y = mood_rating, colour = "mood_rating"))
+
+  # It looks very much as expected. The two loines are mostly opposite of each other. When there is a        migraine, the mood is down and vice versa. 
+
+
+
+# Plotting an overview of the migraines throughout the registered period. A smoothing line is added in order to see what the trends look like. Note that the geom_smooth function adds confidence bands on the smooth as well. 
+ggplot(data_all, aes(full_date)) + 
+  geom_smooth(aes(y = migraine, colour = "migraine"))
+
+# Plotting an overview of the regular headaches throughout the registered period. A smoothing line is added in order to see what the trends look like. Note that the geom_smooth function adds confidence bands on the smooth as well. 
+ggplot(data_all, aes(full_date)) +   
+  geom_smooth(aes(y = headache, colour = "headache"))
+
+# A comparison of the smoothed trends, just for funsies. 
+ggplot(data_all, aes(full_date)) +   
+  geom_smooth(aes(y = headache, colour = "headache"))+
+  geom_smooth(aes(y = migraine, colour = "migraine"))
+
+
+
+
+# Plotting an overview of the mood rating throughout the registered period. A smoothing line is added in order to see what the trends look like. Note that the geom_smooth function adds confidence bands on the smooth as well. 
+ggplot(data_all, aes(full_date)) + 
+  geom_smooth(aes(y = mood_rating, colour = "mood_rating"))
+
+
+# Mood, migraines, and headaches plotted together for a comparison
+ggplot(data_all, aes(full_date)) + 
+  geom_smooth(aes(y = mood_rating, colour = "mood_rating"))+
+  geom_smooth(aes(y = headache, colour = "headache"))+
+  geom_smooth(aes(y = migraine, colour = "migraine"))
+  
+  
+
+# Plotting an overview of the humidity throughout the registered period. A smoothing line is added in order to see what the trends look like. Note that the geom_smooth function adds confidence bands on the smooth as well.
+ggplot(data_all, aes(full_date)) + 
+  geom_smooth(aes(y = mean_humidity, colour = "mean_humidity"))
+
+  
+# Looking at the mean humidity together with mood and migraine (scaled)
+scaleFactor <- max(data_all$mood_rating) / max(data_all$mean_humidity)
+
+ggplot(data_all, aes(x=full_date)) +
+  geom_smooth(aes(y=migraine), method="loess", col="blue") +
+  geom_smooth(aes(y=mood_rating), method = "loess", col="green") +
+  geom_smooth(aes(y=mean_humidity * scaleFactor), method="loess", col="red") +
+  scale_y_continuous(name="Migraine and mood", sec.axis=sec_axis(~./scaleFactor, name="Humidity")) +
+  theme(
+    axis.title.y.left=element_text(color="blue"),
+    axis.text.y.left=element_text(color="blue"),
+    axis.title.y.right=element_text(color="red"),
+    axis.text.y.right=element_text(color="red")
+  )
+
+# Plotting an overview of the avg temp throughout the registered period. A smoothing line is added in order to see what the trends look like. Note that the geom_smooth function adds confidence bands on the smooth as well.
+ggplot(data_all, aes(full_date)) + 
+  geom_smooth(aes(y = data.weather.avgtempC, colour = "data.weather.avgtempC"))
+
+# Looking at the avg temp together with mood and migraine (scaled)
+scaleFactor1 <- max(data_all$mood_rating) / max(data_all$data.weather.avgtempC)
+
+ggplot(data_all, aes(x=full_date)) +
+  geom_smooth(aes(y=migraine), method="loess", col="blue") +
+  geom_smooth(aes(y=mood_rating), method = "loess", col="green") +
+  geom_smooth(aes(y=data.weather.avgtempC * scaleFactor1), method="loess", col="red") +
+  scale_y_continuous(name="Migraine and mood", sec.axis=sec_axis(~./scaleFactor1, name="Avg Temp")) +
+  theme(
+    axis.title.y.left=element_text(color="blue"),
+    axis.text.y.left=element_text(color="blue"),
+    axis.title.y.right=element_text(color="red"),
+    axis.text.y.right=element_text(color="red")
+  )
+
+```
+
+
+

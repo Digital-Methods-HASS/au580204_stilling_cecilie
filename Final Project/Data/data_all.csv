@@ -1,0 +1,74 @@
+"full_date","date","weekday","time","mood","activities","mood_rating","headache","migraine","emesis","medicine","preventive.medicine","pain_type","data.weather.maxtempC","data.weather.mintempC","data.weather.avgtempC","data.weather.sunHour","mean_humidity","mean_pressure","mean_WindGustKmph","mean_precipMM"
+2021-08-20,"20. aug.","friday",23.37,"good","friends | movies | shopping | good meal | Sleep | Phone",3,2,0,"no","","candemox","headache","18","12","16","12.3",68,1012.25,28.625,0
+2021-08-21,"21. aug.","saturday",20,"depressed","Sleep | cry",1,0,3,"yes","phenergan","candemox","migraine","20","11","16","12.3",70.25,1017.625,21.125,0
+2021-08-22,"22. aug.","sunday",20.55,"depressed","relax | travel | Sleep",1,0,3,"yes","","candemox","migraine","17","13","16","11.2",73.875,1017.875,19,0
+2021-08-23,"23. aug.","monday",21.53,"depressed","relax | good meal | family | Sleep",1,0,3,"no","","candemox","migraine","22","14","19","14.3",65,1025.125,10.5,0
+2021-08-24,"24. aug.","tuesday",20,"good","relax | friends | family | Sleep | games | Phone",3,0,2,"no","","candemox","migraine","21","14","19","14.3",62.75,1026.5,12.125,0
+2021-08-25,"25. aug.","wednesday",20,"good","relax | travel | Sleep | Phone",3,2,0,"no","phenergan","candemox","headache","21","15","19","10.0",71.875,1014,32.25,0.05
+2021-08-26,"26. aug.","thursday",20.46,"good","relax | good meal | Sleep | Phone",3,2,0,"no","","candemox","headache","16","13","15","10.0",66.125,1015.375,33.875,0.0125
+2021-08-27,"27. aug.","friday",22.15,"depressed","relax | movies | travel | Phone",1,1,0,"no","","candemox","headache","17","14","16","8.8",84.375,1017,41.625,0.3
+2021-08-28,"28. aug.","saturday",20,"depressed","relax | friends | movies | Phone",1,0,1,"no","","candemox","migraine","19","14","17","8.8",82.25,1020.875,27.25,0.0875
+2021-08-29,"29. aug.","sunday",21.41,"depressed","study | relax | movies | Sleep | cry | Phone",1,0,2,"no","","candemox","migraine","20","15","18","8.8",86.375,1019.5,25.5,0.1
+2021-08-30,"30. aug.","monday",21.32,"depressed","study | good meal | family | Sleep | Phone",1,0,3,"yes","phenergan","candemox","migraine","22","15","19","14.0",76.625,1020,22.5,0.0125
+2021-08-31,"31. aug.","tuesday",20,"depressed","Sleep | cry",1,0,3,"yes","phenergan","candemox","migraine","22","13","19","13.9",64.5,1021.625,15.25,0
+2021-09-01,"1. sep.","wednesday",20.5,"depressed","Sleep | cry",1,0,3,"yes","rizatriptan, bonyl, metoclopramide, phenergan","candemox","migraine","23","14","20","13.9",61.625,1025.5,13.625,0
+2021-09-02,"2. sep.","thursday",22.09,"depressed","study | relax | Sleep | Phone",1,0,3,"no","phenergan","candemox","migraine","21","12","17","13.9",75.375,1024.875,11.875,0
+2021-09-03,"3. sep.","friday",20.17,"depressed","study | travel | Sleep | Phone",1,0,2,"no","phenergan","candemox","migraine","24","13","20","13.8",70,1016.25,29.125,0
+2021-09-04,"4. sep.","saturday",21.23,"good","friends | shopping | good meal",3,0,2,"no","phenergan","candemox","migraine","20","13","17","13.8",72.375,1021,19.25,0
+2021-09-05,"5. sep.","sunday",20.15,"depressed","study | movies | Sleep | cry",1,0,2,"no","","candemox","migraine","20","13","18","13.7",63.375,1024.625,20.625,0
+2021-09-06,"6. sep.","monday",20,"depressed","study | friends | Sleep | Phone",1,2,0,"","","candemox","headache","21","13","18","13.7",72.75,1022.625,16.25,0
+2021-09-07,"7. sep.","tuesday",20,"good","study | friends | movies | Sleep",3,0,3,"yes","rizatriptan, bonyl phenergan","candemox","migraine","23","13","19","13.2",77,1020.875,22.875,0
+2021-09-08,"8. sep.","wednesday",21.49,"good","study | relax | friends | Phone",3,0,1,"no","","candemox","migraine","23","14","19","12.0",79.75,1018.75,20.25,0
+2021-09-09,"9. sep.","thursday",22.12,"depressed","study | relax | Sleep | Phone",1,1,0,"no","","candemox","headache","23","15","20","13.1",72,1013.875,13,0
+2021-09-10,"10. sep.","friday",22.38,"depressed","study | friends | good meal | family | games | Phone",1,1,0,"no","","candemox","headache","23","15","20","13.1",71.125,1012.375,10.75,0.0125
+2021-09-11,"11. sep.","saturday",20,"good","movies | shopping | good meal | family | games",3,0,3,"no","phenergan","candemox","migraine","21","16","18","8.2",86.5,1011.75,15.25,0.15
+2021-09-12,"12. sep.","sunday",20,"depressed","good meal | Sleep",1,0,3,"no","rizatriptan, bonyl","candemox","migraine","19","15","18","9.4",82.875,1011.75,21.25,0.025
+2021-09-13,"13. sep.","monday",20,"depressed","study | movies | Sleep | Phone",1,2,0,"no","","candemox","headache","20","12","17","11.9",73.625,1014.375,14.125,0
+2021-09-14,"14. sep.","tuesday",23.22,"depressed","study | relax | friends | good meal | Sleep | cry | Phone",1,0,3,"no","rizatriptan, bonyl, phenergan","candemox","migraine","19","13","17","11.9",79.375,1016.375,8.5,0
+2021-09-15,"15. sep.","wednesday",20,"depressed","Sleep | cry",1,0,3,"no","","candemox","migraine","18","13","16","10.6",82.5,1014.875,16.75,0.5375
+2021-09-16,"16. sep.","thursday",21.51,"depressed","relax | friends | good meal | Sleep",1,0,3,"no","rizatriptan, bonyl, phenergan","candemox","migraine","19","14","17","8.0",87.875,1008.75,18.5,0.1625
+2021-09-17,"17. sep.","friday",20.42,"depressed","travel | Sleep | Phone | walk",1,0,3,"no","rizatriptan","candemox","migraine","14","14","14","8.0",90.875,1012.875,27.25,0.375
+2021-09-18,"18. sep.","saturday",20,"good","good meal | family | Phone",3,0,2,"no","phenergan","candemox","migraine","16","13","16","10.6",79.75,1019.125,25.75,0.0625
+2021-09-19,"19. sep.","sunday",20,"depressed","movies | travel | family | Sleep | Phone",1,0,3,"no","phenergan","candemox","migraine","15","12","13","11.9",66.5,1023.75,22.75,0
+2021-09-20,"20. sep.","monday",21.49,"depressed","good meal | Sleep | Phone",1,0,3,"no","phenergan","candemox","migraine","13","11","12","6.1",65.125,1024.75,20.875,0.0375
+2021-09-21,"21. sep.","tuesday",21.46,"depressed","movies | bike | Sleep | cry | Phone",1,0,3,"no","phenergan","candemox","migraine","15","8","13","7.5",76.125,1024.625,21,0
+2021-09-22,"22. sep.","wednesday",21.58,"neutral","travel | family | Sleep | Phone",2,0,2,"no","phenergan","candemox","migraine","21","9","16","11.6",78.125,1023.25,22.25,0
+2021-09-23,"23. sep.","thursday",21.16,"neutral","study | travel | family | Sleep",2,2,0,"no","","candemox","headache","15","11","14","6.0",77.75,1005.5,47.125,0.0625
+2021-09-24,"24. sep.","friday",20,"good","friends | party | family",3,2,0,"no","","candemox","headache","15","10","13","7.4",76,1005.375,41,0
+2021-09-25,"25. sep.","saturday",0.4,"good","relax | drawing | Phone | walk",3,0,2,"no","phenergan","candemox","migraine","18","11","15","11.6",76,1011.5,27.625,0
+2021-09-26,"26. sep.","sunday",20,"depressed","relax | travel | family | games",1,0,3,"no","phenergan","candemox","migraine","17","10","15","8.8",81.125,1018.125,16.375,0
+2021-09-27,"27. sep.","monday",20,"good","study | relax | good meal | family | Phone",3,0,2,"no","","candemox","migraine","17","14","16","6.0",91.625,1015.875,25.375,0.1375
+2021-09-28,"28. sep.","tuesday",22.07,"depressed","study | relax | good meal | Phone | Crochet",1,2,0,"no","","candemox","headache","16","10","13","8.8",77.125,1022.375,13.875,0.0375
+2021-09-29,"29. sep.","wednesday",23.29,"depressed","Sleep | Phone",1,0,3,"yes","rizatriptan, bonyl, metoclopramide, phenergan","candemox","migraine","15","9","13","7.2",77.375,1019,20.375,0.025
+2021-09-30,"30. sep.","thursday",20,"neutral","movies | good meal | cleaning | family",2,1,0,"no","","candemox","headache","11","9","11","4.3",82.125,1010.875,42.625,0.25
+2021-10-01,"1. okt.","friday",21.53,"depressed","study | movies | travel | family | Sleep | Phone",1,1,0,"no","","candemox","headache","13","9","11","4.2",85.375,1014.375,41,0.325
+2021-10-02,"2. okt.","saturday",21.16,"good","good meal | family | Sleep | games",3,2,0,"no","","candemox","headache","15","11","13","7.2",80.625,1010.625,22.625,0.15
+2021-10-03,"3. okt.","sunday",22.05,"depressed","relax | travel | good meal | Sleep",1,0,2,"no","","candemox","migraine","17","12","15","4.2",82.5,1002.125,44.125,0.1125
+2021-10-04,"4. okt.","monday",20,"depressed","relax | Sleep | Phone",1,0,3,"no","phenergan","candemox","migraine","14","10","12","7.2",83.75,1014.25,22.5,0.0125
+2021-10-05,"5. okt.","tuesday",21.52,"good","relax | friends | good meal | Sleep | Phone",3,0,3,"no","","candemox","migraine","14","11","13","7.2",87.5,1013.75,27,0.425
+2021-10-06,"6. okt.","wednesday",20,"neutral","relax | movies | good meal | Sleep | Phone | Crochet",2,2,0,"no","","candemox","headache","15","11","13","8.7",84.125,1012.125,14.375,0.0625
+2021-10-07,"7. okt.","thursday",20,"good","relax | movies | Sleep | Phone | Crochet",3,1,0,"no","","candemox","headache","15","9","12","7.2",79.875,1026.875,8.625,0
+2021-10-08,"8. okt.","friday",23.49,"good","movies | cleaning | Phone | Crochet",3,2,0,"no","","candemox","headache","15","10","13","8.7",78.375,1033.5,12.875,0
+2021-10-09,"9. okt.","saturday",20,"good","party | family",3,0,1,"no","","candemox","migraine","16","10","14","8.7",75.5,1034.375,16.75,0
+2021-10-10,"10. okt.","sunday",22.05,"good","relax | Sleep | Phone",3,0,3,"no","rizatriptan, bonyl","candemox","migraine","13","8","11","7.2",67.125,1027,23.125,0
+2021-10-11,"11. okt.","monday",21.53,"depressed","study | relax | audiobook",1,1,0,"no","","candemox","headache","14","8","11","8.7",74.75,1017.5,31.875,0.0125
+2021-10-12,"12. okt.","tuesday",21.26,"depressed","relax | good meal | Sleep | Crochet | audiobook",1,3,0,"no","","candemox","headache","14","7","10","8.7",63.5,1013.625,24.625,0
+2021-10-13,"13. okt.","wednesday",20,"depressed","relax | movies | family",1,0,3,"no","rizatriptan, bonyl","candemox","migraine","11","5","9","8.7",65.375,1019.375,14.125,0
+2021-10-14,"14. okt.","thursday",20,"good","study | good meal | family",3,1,0,"no","","candemox","headache","14","9","12","5.6",83.375,1012.75,26,0
+2021-10-15,"15. okt.","friday",20,"depressed","relax | Sleep | Phone",1,2,0,"no","","aimovig injection, candemox","headache","13","9","11","8.7",70.125,1007.625,37.125,0.1125
+2021-10-16,"16. okt.","saturday",20,"depressed","relax | cry | Phone",1,1,0,"no","","candemox (aimovig)","headache","12","7","10","5.6",69.875,1016,31.375,0
+2021-10-17,"17. okt.","sunday",20,"depressed","relax | movies | Sleep | audiobook",1,1,0,"no","","candemox (aimovig)","headache","12","7","10","4.0",73.375,1014.75,21.5,0
+2021-10-18,"18. okt.","monday",22.59,"depressed","friends | movies | Phone | walk",1,0,0,"no","","candemox (aimovig)","nothing","12","9","10","7.1",75,1020.25,14.75,0
+2021-10-19,"19. okt.","tuesday",23.02,"good","movies | shopping | good meal | family | games",3,0,0,"no","","candemox (aimovig)","nothing","13","10","12","3.9",88.625,1016.5,30.25,0.0625
+2021-10-20,"20. okt.","wednesday",23,"depressed","relax | movies | good meal | Sleep | Phone",1,0,0,"no","","candemox (aimovig)","nothing","16","14","15","3.8",86.75,996.125,48.625,0.125
+2021-10-21,"21. okt.","thursday",22.36,"good","friends | movies | shopping | good meal | Phone",3,0,3,"no","rizatriptan, bonyl","candemox (aimovig)","migraine","11","7","10","7.0",74.875,986.75,38.25,0.0375
+2021-10-22,"22. okt.","friday",22.47,"good","friends | movies | good meal | Crochet",3,0,0,"no","","candemox (aimovig)","nothing","9","7","8","7.0",68.25,1000.25,40,0.075
+2021-10-23,"23. okt.","saturday",20.48,"good","good meal | family | walk | Crochet",3,0,0,"no","","candemox (aimovig)","nothing","12","6","9","8.7",70,1017.25,31,0
+2021-10-24,"24. okt.","sunday",22.27,"neutral","travel | good meal | Sleep | Phone | Crochet",2,0,0,"no","","candemox (aimovig)","nothing","14","7","11","8.7",78,1023.5,27.375,0
+2021-10-25,"25. okt.","monday",22.21,"depressed","good meal | Sleep | Phone | Crochet",1,0,3,"no","rizatriptan, bonyl, treo","candemox (aimovig)","migraine","12","6","9","7.0",85.875,1015.75,27,0.025
+2021-10-26,"26. okt.","tuesday",22,"depressed","study | Sleep | Phone | Crochet",1,0,0,"no","","candemox (aimovig)","nothing","13","8","11","8.7",84.375,1014.25,22.875,0
+2021-10-27,"27. okt.","wednesday",21.34,"depressed","relax | good meal | Sleep | audiobook",1,0,0,"no","","candemox (aimovig)","nothing","14","10","14","3.5",88.25,1012.5,35.75,0.025
+2021-10-28,"28. okt.","thursday",23.25,"depressed","study | movies | shopping | Crochet",1,0,0,"no","","candemox (aimovig)","nothing","18","11","15","8.7",81.875,1013.75,33.25,0
+2021-10-29,"29. okt.","friday",20,"good","friends | family | Crochet | audiobook",3,0,0,"no","","candemox (aimovig)","nothing","14","9","12","7.0",82,1009.75,26.375,0
+2021-10-30,"30. okt.","saturday",20,"good","friends | shopping | games",3,0,0,"no","","candemox (aimovig)","nothing","14","11","12","6.9",83.375,1006.75,25.5,0
+2021-10-31,"31. okt.","sunday",20,"depressed","movies | Sleep",1,0,0,"no","","candemox (aimovig)","nothing","13","10","11","8.7",84.625,1003.125,32.625,0.0625
